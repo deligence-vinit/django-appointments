@@ -1,0 +1,7 @@
+include LICENSE
+include README.rst
+recursive-include doctor *
+recursive-include hospital *
+recursive-include patient *
+recursive-include user *
+global-exclude *.pyc

@@ -1,0 +1,696 @@
+{% extends "base.html"%}
+{% load static %}
+{% block extrajs %}
+<script src="{% static '/js/form.js' %}"></script>
+<script src="{% static '/js/select2.min.js' %}"></script>
+<script>
+    $("#date-list").select2( {
+        placeholder: "Select Date",
+        allowClear: true
+        } );
+    </script>
+    {% endblock extrajs %}
+    {% block extracss %}
+    <link rel="stylesheet" href="{%static 'css/select2.min.css' %}">
+    <style>
+      .nav-link:hover{
+        color: white !important;
+      }
+      .active:hover{
+        color: black !important;
+      }
+        .select2-selection{
+            width: 100% !important;
+            height: 100% !important;
+            min-width: 196px;
+
+        }
+        .select2-selection__arrow{
+            padding-top: 38px !important;
+        }
+      
+      </style>
+      {% endblock extracss %}
+{% block content %}
+<div class="container">
+  <!-- The Modal -->
+ 
+  <div class="modal" id="myModal_add">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="overlay-wrapper">
+          <div class="overlay dark" id="fade_add" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i></div>
+          <div class="flex-box p-2">
+        <button type="button" id="close1" class="close" data-dismiss="modal">&times;</button>
+        <!-- </div> -->
+      <div id="disp" style="display: block;">
+        <form class="form-inline pt-4 pb-4" role="form" id="appointment_book" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="container">
+            <div class="d-flex p-3"><strong><div id="doc_name"></div></strong>&nbsp;(<div id="doc_qualification"></div>),&nbsp;<div id="doc_speciality"></div></div> 
+            <div class="row">
+              <div class="col-lg-6">
+                <div class="row">
+                 
+                    <div class="form-group col-lg-12 mb-3">
+                      <label class="control-label col-lg-4 justify-content-start" for="pt-name">
+                        Patient Name:</label>
+                      <div class="col-lg-8">
+                        <input type="text" class="form-control w-100" id="pt-name" maxlength="50" name="patient_name" placeholder="Enter Name" required>
+                        <input type="hidden" id="doc_id_book" name="doc_id">
+                      </div>
+                    </div>
+                   
+                    <div class="form-group col-lg-12 mb-3">
+                      <label class="control-label col-lg-4 justify-content-start" for="gender">
+                        Gender:</label>
+                      <div class="col-lg-8">
+                        <select class="form-control w-100" id="gender" name="gender" required>
+                          <option value="" selected disabled>Select Gender</option>
+                          <option value="Male">Male</option>
+                          <option value="Female">Female</option>
+                        </select>
+                      </div>
+                    </div>
+                
+                </div>
+              </div>
+              <div class="col-lg-6">
+                <div class="row">
+                
+                      <div class="form-group col-lg-12 mb-3">
+                        <label class="control-label col-lg-4 justify-content-start" for="age">
+                          Age:</label>
+                        <div class="col-lg-8">
+                          <input type="number" class="form-control w-100" min="0" max="100" id="age" name="age" placeholder="Enter Age" required>
+                        </div>
+                      </div>
+  
+                  
+                      <div class="form-group col-lg-12 mb-3">
+                        <label class="control-label col-lg-4 justify-content-start" for="book_date">
+                          Appointment Date:</label>
+                        <div class="col-lg-8">
+                          <input type="date" class="form-control w-100" id="book_date" name="appointment_date" required>
+                        </div>
+                      </div>
+                
+
+                </div>
+              </div>
+            </div>
+            <div class="form-group mb-3 pt-2">
+              <div class="col-lg-6 w-100">
+                <div>
+                  <button type="button" onclick="submit_book_appointment(); return false" class="btn btn-md bg-gradient-primary">Submit</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+
+        </form>
+      </div>
+          </div>
+      </div>
+    </div>
+  </div>
+  
+</div>
+</div>
+<!-- modal end -->
+<input type="hidden" value="{{profile.0.id}}" id="hos_id">
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Profile</h1>
+                </div>
+                <div class="col-sm-6 pr-0">
+                  <div class="d-flex flex-row-reverse bd-highlight">
+                    
+                    <div class="bd-highlight pl-3">
+                  <a class="btn btn-md bg-gradient-primary" href="/logout/">Logout</a>
+                </div>
+                <div class="bd-highlight">
+                  <nav class="navbar-expand">
+                    <ul class="navbar-nav ml-auto">
+                      <!-- Messages Dropdown Menu -->
+                      
+                      <!-- Notifications Dropdown Menu -->
+                      <li class="nav-item dropdown">
+                        <a class="nav-link" data-toggle="dropdown" href="#" aria-expanded="false">
+                          <i class="far fa-bell fa-2x bell"></i>
+                          <span class="badge badge-warning navbar-badge" id="pending_ring_count"></span>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right">
+                         
+                          <!-- <div class="dropdown-divider"></div> -->
+                          <a href="#custom-tabs5-tab" onclick="confirm_appointments(); return false;" class="dropdown-item">
+                            <i class="fas fa-users mr-2"></i> <span id="pending_count"></span> pending requests
+                          </a>
+                      </li>
+                      
+                    </ul>
+                  </nav>
+                  </div>
+              
+              </div></div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+
+                    <!-- Profile Image -->
+
+                    <div class="card card-primary card-outline">
+                        <div class="card-header">
+                            <h4>{{profile.0.name}}</h4>
+                        </div>
+                        <div class="card-body m-0 p-0">
+                            <div class="row mb-2 m-0 p-0 gallery_pack">
+                                
+                                <div class="col-sm-12 p-2">
+                                    <a href="/editHospital/{{profile.0.id}}" class="btn btn-md btn-primary btn-block">Edit Profile</a>
+                                </div>
+                                <div class="mb-2 col-sm-12 p-2">
+                                  <a href="/changePassword/{{profile.0.id}}" class="btn btn-md btn-primary btn-block">Change Password</a>
+                              </div>
+                                
+                            </div>
+                           
+                        </div>
+
+                        <!-- /.card-body -->
+                    </div>
+                
+
+                    <!-- About Me Box -->
+                    <div class="card card-primary card-outline">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                            <a class="side_doctor" onclick="confirm_appointments(); return false;" href="#">Confirm Appointments</a>
+                            <div id="pending_count_side"></div>
+                            </div>                          
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                            <a class="side_doctor" onclick="view_appointments(); return false;" href="#">View Appointments</a>
+                            <div id="view_count"></div>
+                            <input type="hidden" id="doc_id_appointment">
+                            </div> 
+                            <hr>
+                            <!-- <div class="d-flex justify-content-between">
+                            <a class="side_doctor" href="#" onclick="book_appointment(); return false;">Book Appointments</a>
+                            <div id="book_count"></div>
+                            </div>  -->
+    
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                            <a class="side_doctor" onclick="add_holidays(); return false;" href="#">Add Holidays</a>
+                            <div id="holidays_count"></div>
+                            </div> 
+                            <hr>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-9 p-0">
+                    <div class="col-md" id="about">
+                        <div class="card">
+                            <div class="card-header p-2">
+                                <h4 class="m-0 p-2">About Hospital</h4>
+                            </div>
+                            <div class="card-body about">
+                                        <div class="row">
+                                        <div class="col-lg-6">
+                                            <ul class="small-points p-2">
+                                        <li>Email : {{profile.0.email}}</li>
+                                        <li>Phone : {{profile.0.phone}}</li>
+                                        <li>Beds Capacity : {{profile.0.beds_count}}</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <ul class="small-points p-2">
+                                        <li>City : {{profile.0.city}}</li>
+                                        <li>Country : {{profile.0.country}}</li>
+                                    </ul>
+                                    
+                             </div>   
+                                    </div>
+                                    
+                        </div>
+                    </div>
+                         
+                        </div>
+
+                        <div class="col-md" id="about">
+                            <div class="card">
+                                <div class="card-header p-2">
+                                    <h4 class="m-0 p-2">Doctors</h4>
+                                </div>
+                                <div class="card-body p-0">
+                                   
+                                          <div class="card-primary card-tabs">
+                                            <div class="card-header p-0 pt-1" style="border: 0px !important;">
+                                              <ul class="nav nav-tabs" id="custom-tabs-five-tab" role="tablist">
+                                                <li class="nav-item">
+                                                  <a class="nav-link active" id="custom-tabs2-tab" data-toggle="pill" href="#custom-tabs2" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">View</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link" id="custom-tabs1-tab" data-toggle="pill" href="#custom-tabs1" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Add</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link"  id="custom-tabs3-tab" data-toggle="pill" href="#custom-tabs3" style="display: none;" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Edit</a>
+                                                </li>
+                                                
+                                                <li class="nav-item">
+                                                  <a class="nav-link"  id="custom-tabs5-tab" data-toggle="pill" onclick="get_appointments('confirm'); return false;" href="#custom-tabs5" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Confirm Appointments
+                                                  </a>
+                                                </li>
+                                                <li class="nav-item">
+                                                
+                                                  <a class="nav-link"  id="custom-tabs6-tab" data-toggle="pill" onclick="get_appointments('view'); return false;" href="#custom-tabs6" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">View Appointments
+                                            
+                                                  </a>
+                                                </li>
+                                                <!-- <li class="nav-item">
+                                                  <a class="nav-link"  onclick="getDoctor('','book'); return false;" id="custom-tabs4-tab" data-toggle="pill" href="#custom-tabs4" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Book Appointments
+                                                  </a>
+                                                </li> -->
+                                                <li class="nav-item">
+                                                  <a class="nav-link"  id="custom-tabs7-tab" data-toggle="pill" href="#custom-tabs7" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Add Holidays
+                                                  </a>
+                                                </li>
+                              
+                                              </ul>
+                                            </div>
+                                            <div class="card-body">
+                                              <div class="tab-content" id="custom-tabContent">
+                        
+                                                <div class="tab-pane fade " id="custom-tabs1" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                  <div class="overlay-wrapper">
+                                                    <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                    <form class="form-inline pt-4 pb-4" role="form" id="doctor-form" method="POST" enctype="multipart/form-data">
+                                                        {% csrf_token %}
+                                                        <div class="container">
+                                                          <div class="row">
+                                                            <div class="col-lg-6">
+                                                              <div class="row">
+                                                                <div class="form-group col-lg-12 mb-3">
+                                                                  <label class="control-label col-lg-4 justify-content-start" for="hospital_name">
+                                                                    Name:</label>
+                                                                  <div class="col-lg-8">
+                                                                    <input type="text" class="form-control w-100" id="name" name="name"
+                                                                      minlength="3" maxlength="50" placeholder="Enter Doctor's Name" required>
+                                                                  </div>
+                                                                </div>
+                                                                <input type="hidden" name="hospital_id" id="hospital_id" value="{{profile.0.id}}">
+                                                                <input type="hidden" value="" name="link" id="link">
+                                                                <div class="form-group col-lg-12 mb-3">
+                                                                  <label class="control-label col-lg-4 justify-content-start">Email:</label>
+                                                                  <div class="col-lg-8">
+                                                                    <input type="email" class="form-control w-100" id="email" name="email"
+                                                                      maxlength="100" placeholder="Enter Email-Id" required>
+                                                                  </div>
+                                                                </div>
+                                                                <div class="form-group col-lg-12 mb-3">
+                                                                    <label class="control-label col-lg-4 justify-content-start" for="hos_phone">Phone:</label>
+                                                                    <div class="col-lg-8">
+                                                                      <input type="number" class="form-control w-100" id="hos_phone" name="phone" min="0"
+                                                                        onKeyPress="if(this.value.length==15) return false;" placeholder="Enter Phone No."
+                                                                        required>
+                                                                    </div>
+                                                                  </div>
+                                                        
+                                                              </div>
+                                                            </div>
+                                                            <div class="col-lg-6">
+                                                              <div class="row">
+                                                                
+                                                                <div class="form-group col-lg-12 mb-3">
+                                                                  <label class="control-label col-lg-4 justify-content-start" for="speciality_tag">Qualification:</label>
+                                                                  <div class="col-lg-8">
+                                                                    <input type="text" class="form-control w-100" id="qualification" name="qualification"
+                                                                    minlength="3" maxlength="100" placeholder="Add Speciality" required>
+                                                                  </div>
+                                                                </div>
+                                                               
+                                                                <div class="form-group col-lg-12 mb-3">
+                                                                    <label class="control-label col-lg-4 justify-content-start" for="speciality_tag">Speciality:</label>
+                                                                    <div class="col-lg-8">
+                                                                      <input type="text" class="form-control w-100" id="speciality" name="speciality"
+                                                                      minlength="3" maxlength="100" placeholder="Add Speciality" required>
+                                                                    </div>
+                                                                  </div>
+                                                                  
+                                                                  <div class="form-group col-lg-12 mb-2">
+                                                                    <label class="control-label col-lg-4 justify-content-start"
+                                                                      for="select_country">Time Slots:</label>
+                                                                    <div class="col-lg-8">
+                                                                        <div class="input-group">
+                                                                            <input type="time" class="form-control" id="from_time" name="from_time[]" required>_
+                                                                            <input type="time" class="form-control" id="to_time" name="to_time[]" required>
+                                                                            <div class="input-group-append">
+                                                                              <span class="input-group-text"><a href="#" onclick="add_slots('add_slot'); return false;"><i class="fa fa-plus fa-sm" aria-hidden="true"></i></a></span>
+                                                                            </div>
+                                                                          </div>
+                                                                         <div id="add_slot"></div> 
+                                                        
+                                                                    </div>
+                                                                  </div>
+
+                                                                  <div class="form-group col-lg-12" style="padding-left: 34px;
+                                                                  padding-top: 10px;">
+                                                                
+                                                                    <h6 class="mb-0"><strong>Note:</strong> Please be carefully while adding slots</h6>
+                                                                      <p class="mb-0">* Slot start time must be always smaller then end time.</p>
+                                                                      <p class="mb-0">* Different Slot timings should not overlap.</p>
+                                                                      <p class="mb-0">* Increase Availabilty time from first slot to last slot.</p>
+                                                                      <p>* Add time in 24 Hrs format.</p>
+                                                                  </div>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                          <div class="form-group mb-3 ">
+                                                            <div class="col-lg-6 w-100">
+                                                              <div>
+                                                                <button class="btn btn-md bg-gradient-primary">Submit</button>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </div>
+                                        
+                                                        <!-- /.card-body -->
+                                        
+                                                      </form>
+                                                  </div>
+                                                </div>
+                                                <div class="tab-pane fade active show" id="custom-tabs2" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                      <div class="card-body table-responsive">
+                                                        <table class="table" id="results">
+                                                            
+                                                            
+                                                        </table>
+                                                      </div>
+                                                      <div class="card-footer" id="demo">
+                                                        <nav aria-label="Contacts Page Navigation">
+                                                            <div id="pageNavPosition" style="text-align: center;"></div>
+                                        
+                                                        </nav>
+                                                    </div>
+                                                  
+                                                    </div>
+                                                  </div>
+                                                 
+                                                  <div class="tab-pane fade " id="custom-tabs3" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                      <form class="form-inline pt-4 pb-4" role="form" id="doctor-form-edit" method="POST" enctype="multipart/form-data">
+                                                          {% csrf_token %}
+                                                          <div class="container">
+                                                            <div class="row">
+                                                              <div class="col-lg-6">
+                                                                <div class="row">
+                                                                  <div class="form-group col-lg-12 mb-3">
+                                                                    <label class="control-label col-lg-4 justify-content-start" for="hospital_name">
+                                                                      Name:</label>
+                                                                    <div class="col-lg-8">
+                                                                      <input type="text" class="form-control w-100" id="name-edit" name="name-edit"
+                                                                        minlength="3" maxlength="50" placeholder="Enter Doctor's Name" required>
+                                                                    </div>
+                                                                  </div>
+                                                                  <input type="hidden" id="doc_id">
+                                                                  <div class="form-group col-lg-12 mb-3">
+                                                                    <label class="control-label col-lg-4 justify-content-start">Email:</label>
+                                                                    <div class="col-lg-8">
+                                                                      <input type="email" class="form-control w-100" id="email-edit" name="email-edit"
+                                                                        maxlength="100" placeholder="Enter Email-Id" required>
+                                                                    </div>
+                                                                  </div>
+                                                                  <div class="form-group col-lg-12 mb-3">
+                                                                      <label class="control-label col-lg-4 justify-content-start" for="hos_phone">Phone:</label>
+                                                                      <div class="col-lg-8">
+                                                                        <input type="number" class="form-control w-100" id="phone-edit" name="phone-edit" min="0"
+                                                                          onKeyPress="if(this.value.length==15) return false;" placeholder="Enter Phone No."
+                                                                          required>
+                                                                      </div>
+                                                                    </div>
+                                                                  
+                                          
+                                                          
+                                                                </div>
+                                                              </div>
+                                                              <div class="col-lg-6">
+                                                                <div class="row">
+                                                                  
+                                                                  <div class="form-group col-lg-12 mb-3">
+                                                                    <label class="control-label col-lg-4 justify-content-start" for="speciality_tag">Qualification:</label>
+                                                                    <div class="col-lg-8">
+                                                                      <input type="text" class="form-control w-100" id="qualification-edit" name="qualification-edit"
+                                                                      minlength="3" maxlength="100" placeholder="Add Speciality" required>
+                                                                    </div>
+                                                                  </div>
+                                                                 
+                                                                  <div class="form-group col-lg-12 mb-3">
+                                                                      <label class="control-label col-lg-4 justify-content-start" for="speciality_tag">Speciality:</label>
+                                                                      <div class="col-lg-8">
+                                                                        <input type="text" class="form-control w-100" id="speciality-edit" name="speciality-edit"
+                                                                        minlength="3" maxlength="100" placeholder="Add Speciality" required>
+                                                                      </div>
+                                                                    </div>
+                                                                    
+                                                                    <div class="form-group col-lg-12">
+                                                                      <label class="control-label col-lg-4 justify-content-start"
+                                                                        for="select_country">Time Slots:</label>
+                                                                      <div class="col-lg-8">
+                                                                          <div class="input-group">
+                                                                              <input type="time" class="form-control" id="from_time-edit" name="from_time[]" required>_
+                                                                              <input type="time" class="form-control" id="to_time-edit" name="to_time[]" required>
+                                                                              <div class="input-group-append">
+                                                                                <span class="input-group-text"><a href="#" onclick="add_slots('add_slot-edit'); return false;"><i class="fa fa-plus fa-sm" aria-hidden="true"></i></a></span>
+                                                                              </div>
+                                                                            </div>
+                                                                           <div id="add_slot-edit"></div> 
+                                                          
+                                                                      </div>
+                                                                    </div>
+
+                                                                    <div class="form-group col-lg-12" style="padding-left: 34px;
+                                                                  padding-top: 10px;">
+                                                                
+                                                                    <h6 class="mb-0"><strong>Note:</strong> Please be carefully while adding slots-</h6>
+                                                                      <p class="mb-0">* Slot start time must be always smaller then end time.</p>
+                                                                      <p class="mb-0">* Different Slot timings should not overlap.</p>
+                                                                      <p class="mb-0">* Increase Availabilty time from first slot to last slot.</p>
+                                                                      <p>* Add time in 24 Hrs format.</p>
+                                                                  </div>
+
+                                                                </div>
+                                                              </div>
+                                                            </div>
+                                                            <div class="form-group mb-3">
+                                                              <div class="col-lg-6 w-100">
+                                                                <div>
+                                                                  <button class="btn btn-md bg-gradient-primary">Submit</button>
+                                                                </div>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                        </form>
+                                                    </div>
+                                                  </div>
+                                                  <!-- book appointment start -->
+                                                  <!-- <div class="tab-pane fade " id="custom-tabs4" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="tab-pane fade active show" id="custom-tabs2" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                      <div class="overlay-wrapper">
+                                                        <div class="overlay dark" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                        <div class="card-body table-responsive">
+                                                          <table class="table" id="results_book">
+                                                              
+                                                              
+                                                          </table>
+                                                        </div>
+                                                        <div class="card-footer" id="demo1">
+                                                          <nav aria-label="Contacts Page Navigation">
+                                                              <div id="pageNavPosition_book" style="text-align: center;"></div>
+                                          
+                                                          </nav>
+                                                      </div>
+                                                    
+                                                      </div>
+                                                    </div>
+                                                  </div> -->
+                                                  <!-- book appointment end -->
+                                                  <!-- confirm appointments start-->
+                                                  <div class="tab-pane fade " id="custom-tabs5" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                      <div class="p-0 d-flex justify-content-end"><div class="form-inline ml-3">
+                                                        <div class="form-group col-lg-12 mb-3">
+                                                      
+                                                          <div class="form-group">
+                                                            <label for="cstm_date1">Select Date: &nbsp;</label>
+                                                              <input id="cstm_date1" onchange="get_appointments('confirm'); return false;" class="form-control" name="cstm_date1" type="date"/>
+                                                          </div>
+                                                        </div>
+                                                        </div>
+                                                      </div></div>
+                                                      <div class="card-body table-responsive p-0">
+                                                        <table class="table" id="results_confirm">
+                                                        
+                                                        </table>
+                                                      </div>
+                                                      <div class="card-footer" id="confirm">
+                                                        <nav aria-label="Contacts Page Navigation">
+                                                            <div id="pageNavPosition_confirm" style="text-align: center;"></div>
+                                        
+                                                        </nav>
+                                                    </div>
+                                                    </div>
+                                                 
+                                                   <!-- confirm appointments end-->
+                                                   <!-- view_appointments start -->
+                                                  <div class="tab-pane fade " id="custom-tabs6" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                  
+                                                      <div class="p-0 d-flex justify-content-end"><div class="form-inline ml-3">
+                                                        <div class="form-group col-lg-12 mb-3">
+                                                          <div class="form-group">
+                                                            <label for="cstm_date">Select Date: &nbsp;</label>
+                                                              <input id="cstm_date" onchange="get_appointments('view'); return false;" class="form-control" name="cstm_date" type="date" />
+                                                          </div>
+                                                        </div>
+                                                      </div></div>
+                                                      <div class="card-body table-responsive p-0">
+                                                        <table class="table" id="results_view">
+                                                        
+                                                        </table>
+                                                      </div>
+                                                      <div class="card-footer" id="view">
+                                                        <nav aria-label="Contacts Page Navigation">
+                                                            <div id="pageNavPosition_view" style="text-align: center;"></div>
+                                        
+                                                        </nav>
+                                                    </div>
+                                                    </div>
+                                                  </div>
+                                                  <!-- view_appointments end -->
+                                                  <!-- add holidays start-->
+                                                  <div class="tab-pane fade " id="custom-tabs7" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                      <form class="form-inline pt-4 pb-4" role="form" id="holidays_add" method="POST" enctype="multipart/form-data">
+                                                          {% csrf_token %}
+                                                          <div class="container">
+                                                            <div class="row">
+                                                              <div class="col-lg-6">
+                                                                <div class="row">
+                                                                  <div class="col-lg-12 mb-2">
+                                                                    <div class="d-flex justify-content-center">
+                                                                    <button class="btn btn-md bg-gradient-primary" onclick="add_date('add_date'); return false;"
+                                                                     >Add Holidays:</button>
+                                                                    </div>
+                                                                    <div class="col-lg-12 pt-4">
+                                                                  
+                                                                         <div id="add_date"></div> 
+                                                        
+                                                                    </div>
+                                                                  </div>
+
+                                                                
+                                                                </div>
+                                                              </div>
+                                                              <div class="col-lg-6">
+                                                                <div class="row">
+                                                                  <div class="form-group col-lg-12 mb-2">
+                                                                    <label class="control-label pb-1"
+                                                                      style="margin: 0 auto;">Select Weekend Holidays:</label>
+                                                                      <div class="dowPicker">
+                                                                        <div class="dowPickerOption">
+                                                                          <input type="checkbox" name="sunday" value="Sunday" id="Sunday">
+                                                                          <label for="Sunday">S</label>
+                                                                        </div>
+                                                                        <div class="dowPickerOption">
+                                                                          <input type="checkbox" name="monday" value="Monday" id="Monday">
+                                                                          <label for="Monday">M</label>
+                                                                        </div>
+                                                                        <div class="dowPickerOption">
+                                                                          <input type="checkbox" name="tuesday" value="Tuesday" id="Tuesday">
+                                                                          <label for="Tuesday">T</label>
+                                                                        </div>
+                                                                        <div class="dowPickerOption">
+                                                                          <input type="checkbox" name="wednesday" value="Wednesday" id="Wednesday">
+                                                                          <label for="Wednesday">W</label>
+                                                                        </div>
+                                                                        <div class="dowPickerOption">
+                                                                          <input type="checkbox" name="thursday" value="Thursday" id="Thursday">
+                                                                          <label for="Thursday">T</label>
+                                                                        </div>
+                                                                        <div class="dowPickerOption">
+                                                                          <input type="checkbox" name="friday" value="Friday" id="Friday">
+                                                                          <label for="Friday">F</label>
+                                                                        </div>
+                                                                        <div class="dowPickerOption">
+                                                                          <input type="checkbox" name="saturday" value="Saturday" id="Saturday">
+                                                                          <label for="Saturday">S</label>
+                                                                        </div>
+                                                                      </div> 
+                                                                  </div>
+                                                                    </div>
+                                                                
+                                          
+                                                                </div>
+                                                              </div>
+                                                            </div>
+                                                            <div class="form-group mb-3 pt-2 pl-3">
+                                                              <div class="col-lg-6 w-100">
+                                                                <div>
+                                                                  <button type="submit" class="btn btn-md bg-gradient-primary">Add</button>
+                                                                </div>
+                                                              </div>
+                                                            </div>
+                                                          </form>
+                                                          </div>
+                                          
+                                                    </div>
+                                                  
+                                                  <!-- add holidays end-->
+                                              </div>
+
+                                              </div>
+                                            </div>
+                                            
+                                      </div>             
+                            </div>
+                        </div>
+                             
+                            </div>
+                        </div>
+                        </div>
+                
+                </div>
+
+
+                <!-- /.nav-tabs-custom -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+</div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+</div>
+{% endblock content %}

@@ -1,0 +1,351 @@
+{% extends "base.html"%}
+{% load static %}
+{% block extrajs %}
+<script src="{% static '/js/view.js' %}"></script>
+<script src="{% static '/js/select2.min.js' %}"></script>
+<script>
+    $("#hospital-list").select2( {
+        placeholder: "Select Hospital",
+        allowClear: true
+        } );
+        $("#Doctor-list").select2( {
+        placeholder: "Select Doctor",
+        allowClear: true
+        } );
+    </script>
+    {% endblock extrajs %}
+    {% block extracss %}
+    <link rel="stylesheet" href="{%static 'css/select2.min.css' %}">
+    <style>
+      .nav-link:hover{
+        color: white !important;
+      }
+      .active:hover{
+        color: black !important;
+      }
+        .select2-selection{
+            width: 100% !important;
+            height: 100% !important;
+
+        }
+        .select2-selection__arrow{
+            padding-top: 38px !important;
+        }
+      
+      </style>
+      {% endblock extracss %}
+{% block content %}
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Profile</h1>
+                </div>
+                <div class="col-sm-6 pr-0">
+                  <div class="d-flex flex-row-reverse bd-highlight">
+                    
+                    <div class="bd-highlight pl-3">
+                  <a class="btn btn-md bg-gradient-primary" href="/logout/">Logout</a>
+                </div>
+              
+              </div></div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+
+                    <!-- Profile Image -->
+
+                    <div class="card card-primary card-outline">
+                        <div class="card-header">
+                            <h4>{{profile_add.0.name}}</h4>
+                        </div>
+                        <div class="card-body m-0 p-0">
+                            <div class="row mb-2 m-0 p-0 gallery_pack">
+                                
+                                <div class="col-sm-12 p-2">
+                                    <a href="/editPatient/{{profile.0.id}}" class="btn btn-md btn-primary btn-block">Edit Profile</a>
+                                </div>
+                                <div class="mb-2 col-sm-12 p-2">
+                                  <a href="/passwordChange/{{profile.0.id}}" class="btn btn-md btn-primary btn-block">Change Password</a>
+                              </div>
+                                
+                            </div>
+                           
+                        </div>
+
+                        <!-- /.card-body -->
+                    </div>
+                
+
+                    <!-- About Me Box -->
+                    <div class="card card-primary card-outline">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <a class="side_doctor" onclick="tabchange('custom-tabs1-tab'); return false;" href="#">Book Appointment</a>
+                                <div id="book"></div>
+                                </div>                          
+                                <hr>
+                            <div class="d-flex justify-content-between">
+                            <a class="side_doctor" onclick="tabchange('custom-tabs2-tab'); return false;" href="#">Completed Appointments</a>
+                            <div id="completed_count"></div>
+                            </div>                          
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                            <a class="side_doctor" onclick="tabchange('custom-tabs3-tab'); return false;" href="#">Upcoming Appointments</a>
+                            <div id="upcoming_count"></div>
+                            </div> 
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                            <a class="side_doctor" onclick="tabchange('custom-tabs4-tab'); return false;"href="#">Waiting for Confirmation</a>
+                            <div id="waiting_count"></div>
+                            </div> 
+
+                            <hr>
+                            <div class="d-flex justify-content-between">
+                              <a class="side_doctor" onclick="tabchange('custom-tabs5-tab'); return false;"href="#">Rejected</a>
+                              <div id="rejected_count"></div>
+                              </div> 
+  
+                              <hr>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-9 p-0">
+                    <div class="col-md" id="about">
+                        <div class="card">
+                            <div class="card-header p-2">
+                                <h4 class="m-0 p-2">About</h4>
+                            </div>
+                            <div class="card-body about">
+                                        <div class="row">
+                                        <div class="col-lg-6">
+                                        <ul class="small-points p-2">
+                                        <li>Name : {{profile_add.0.name}}</li>
+                                        <li>Email : {{profile.0.email}}</li>
+                                        <li>Phone : {{profile_add.0.phone}}</li>
+                                        <li>City : {{profile_add.0.city}}</li>
+    
+                                            </ul>
+                                        </div>
+                                        <div class="col-lg-6">
+                                        <ul class="small-points p-2">
+                                        <li>Age : {{profile_add.0.age}}</li>
+                                        <li>Gender : {{profile_add.0.gender}}</li>
+                                        <li>Address : {{profile_add.0.address}}</li>      
+                                        
+                                        <li>Country : {{profile_add.0.country}}</li>
+                                    </ul>
+                                    
+                             </div>   
+                                    </div>
+                                    
+                        </div>
+                    </div>
+                         
+                        </div>
+
+                        <div class="col-md" id="about">
+                            <div class="card">
+                                <div class="card-header p-2">
+                                    <h4 class="m-0 p-2">Appointments</h4>
+                                </div>
+                                <div class="card-body p-0">
+                                   
+                                          <div class="card-primary card-tabs">
+                                            <div class="card-header p-0 pt-1" style="border: 0px !important;">
+                                              <ul class="nav nav-tabs" id="custom-tabs-five-tab" role="tablist">
+                                                <li class="nav-item">
+                                                    <a class="nav-link active" id="custom-tabs1-tab" data-toggle="pill" href="#custom-tabs1" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Book Appointments</a>
+                                                  </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link" id="custom-tabs2-tab" onclick="getappointments('completed','{{profile.0.id}}'); return false;" data-toggle="pill" href="#custom-tabs2" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Completed Appointments</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link" id="custom-tabs3-tab" onclick="getappointments('upcoming','{{profile.0.id}}'); return false;" data-toggle="pill" href="#custom-tabs3" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Upcoming Appointments</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link" id="custom-tabs4-tab" onclick="getappointments('waiting','{{profile.0.id}}'); return false;" data-toggle="pill" href="#custom-tabs4" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Waiting for Confirmation</a>
+                                                </li>
+                                                <li class="nav-item">
+                                                  <a class="nav-link" id="custom-tabs5-tab" onclick="getappointments('rejected','{{profile.0.id}}'); return false;" data-toggle="pill" href="#custom-tabs5" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">Rejected</a>
+                                                </li>
+                                              </ul>
+                                            </div>
+                                            <div class="card-body">
+                                              <div class="tab-content" id="custom-tabContent">
+                        
+                                                <div class="tab-pane fade active show" id="custom-tabs1" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                  <div class="overlay-wrapper">
+                                                    <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                    <form method="POST" id="book_ap">
+                                                      {% csrf_token %}
+                                                    <div class="container">
+                                                        <div class="row">
+                                                          
+                                                          <div class="col-lg-6">
+                                                            <div class="row">
+                                                              <div class="form-group col-lg-12 mb-3">
+                                                                <label class="control-label col-lg-4 justify-content-start" for="name">
+                                                                  Hospitals:</label>
+                                                                <div class="col-lg-12">
+                                                                    <select id="hospital-list" onchange="getDoctorList(); return false;" class="form-control">
+                                                                        <option value="">Select Hospital</option>
+                                                                    
+                                                                        
+                                                                    </select>
+                                                                </div>
+                                                              </div>
+                                                            
+                                                              <div class="form-group col-lg-12 mb-3">
+                                                                <label class="control-label col-lg-4 justify-content-start" for="name">
+                                                                  Date:</label>
+                                                                <div class="col-lg-10">
+                                                                    <input type="date" class="form-control" id="book_date" name="book_date" required>
+                                                                </div>
+                                                              </div>
+
+                                                            </div>
+                                                          </div>
+                                                          <input type="hidden" name="pt_id" id="pt_id" value="{{profile.0.id}}">
+                                                          <div class="col-lg-6">
+                                                            <div class="row">
+                                                             
+                                                                <div class="form-group col-lg-12 mb-3">
+                                                                    <label class="control-label col-lg-4 justify-content-start"  for="name">
+                                                                      Doctors:</label>
+                                                                    <div class="col-lg-12">
+                                                                        <select id="Doctor-list" name="doctors" class="form-control" required>
+                                                                            <option value="">Select Doctor</option>
+                                                                            
+                                                                        </select>
+                                                                    </div>
+                                                                  </div>
+                                                             
+                                                            </div>
+                                                                
+
+                                                          </div>
+                                                          <div class="form-group mb-3 pt-3 pl-3">
+                                                            <div class="col-lg-6 w-100">
+                                                              <div>
+                                                                <button type="submit" class="btn btn-md bg-gradient-primary">Submit</button>
+                                                              </div>
+                                                            </div>
+                                                          </div>
+                                                         
+                                                        </div>
+                                                      </form>
+                                                      </div>
+
+
+                                                  </div>
+                                                </div>
+                                                <div class="tab-pane fade " id="custom-tabs2" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                      <div class="card-body table-responsive">
+                                                        <table class="table" id="results_completed">
+                                                            
+                                                            
+                                                        </table>
+                                                      </div>
+                                                      <div class="card-footer" id="completed">
+                                                        <nav aria-label="Contacts Page Navigation">
+                                                            <div id="pageNavPosition_completed" style="text-align: center;"></div>
+                                        
+                                                        </nav>
+                                                    </div>
+                                                  
+                                                    </div>
+                                                  </div>
+                                                 
+                                                  <div class="tab-pane fade " id="custom-tabs3" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                      <div class="card-body table-responsive">
+                                                        <table class="table" id="results_upcoming">
+                                                            
+                                                            
+                                                        </table>
+                                                      </div>
+                                                      <div class="card-footer" id="upcoming">
+                                                        <nav aria-label="Contacts Page Navigation">
+                                                            <div id="pageNavPosition_upcoming" style="text-align: center;"></div>
+                                        
+                                                        </nav>
+                                                    </div>
+                                                    </div>
+                                                  </div>
+                                                 
+                                                  <div class="tab-pane fade " id="custom-tabs4" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                      <div class="card-body table-responsive">
+                                                        <table class="table" id="results_waiting">
+                                                            
+                                                            
+                                                        </table>
+                                                      </div>
+                                                      <div class="card-footer" id="waiting">
+                                                        <nav aria-label="Contacts Page Navigation">
+                                                            <div id="pageNavPosition_waiting" style="text-align: center;"></div>
+                                        
+                                                        </nav>
+                                                    </div>
+                                                    </div>
+                                                  </div>
+
+                                                  <div class="tab-pane fade " id="custom-tabs5" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                      <div class="card-body table-responsive">
+                                                        <table class="table" id="results_rejected">
+                                                            
+                                                            
+                                                        </table>
+                                                      </div>
+                                                      <div class="card-footer" id="rejected">
+                                                        <nav aria-label="Contacts Page Navigation">
+                                                            <div id="pageNavPosition_rejected" style="text-align: center;"></div>
+                                        
+                                                        </nav>
+                                                    </div>
+                                                    </div>
+                                                  </div>
+
+                                              </div>
+                                            </div>
+                                            
+                                      </div>             
+                            </div>
+                        </div>
+                             
+                            </div>
+                        </div>
+                        </div>
+                
+                </div>
+
+
+                <!-- /.nav-tabs-custom -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+</div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+</div>
+{% endblock content %}

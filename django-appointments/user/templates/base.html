@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>{{title}}</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="{%static 'css/all.min.css' %}">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
+  <link href="{% static 'css/main.css' %}" rel="stylesheet" media="all">
+  <!-- icheck bootstrap -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+  <script src="{% static '/js/main.js' %}"></script>
+  <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/css/toastr.css" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.0.1/js/toastr.js"></script>
+  <style>
+    .pb{
+    padding-bottom: 0.1px !important;
+    background-color: #ffffff;
+}
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    
+    /* Firefox */
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+    </style>
+  {% block extracss %}
+{{extracss}}
+{% endblock %}
+</head>
+<body>
+    {% block content%}
+    {{ content }}
+    {% endblock %}
+    {% if messages %}
+            {% for message in messages %}
+            {% ifequal message|stringformat:"s" "changed" %}
+            <script>
+              toastr.success('Password changed successful, Please login');
+            </script>
+            {% endifequal %}
+            {% ifequal message|stringformat:"s" "link sent" %}
+            <script>
+              toastr.success('Mail with password reset link is sent to your Mail-Id');
+            </script>
+            {% endifequal %}
+            {% ifequal message|stringformat:"s" "deleted" %}
+            <script>
+              toastr.success('Deleted Successfully');
+            </script>
+            {% endifequal %}
+            {% ifequal message|stringformat:"s" "success" %}
+            <script>
+              toastr.success('Submitted Successfully');
+            </script>
+            {% endifequal %}
+            {% ifequal message|stringformat:"s" "signed" %}
+            <script>
+              toastr.success('Signed Successfully');
+            </script>
+            {% endifequal %}
+            {% ifequal message|stringformat:"s" "error" %}
+            <script>
+              toastr.error('Try Again Later');
+            </script>
+            {% endifequal %}
+            
+            {% endfor %}
+            {% endif %}
+            {% block extrajs %}
+            
+            
+    {% endblock extrajs %}
+</body>
+</html>

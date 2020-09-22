@@ -1,0 +1,175 @@
+{% extends "base.html"%}
+{% load static %}
+{% block extrajs %}
+<script src="{% static '/js/doctor.js' %}"></script>
+    {% endblock extrajs %}
+    {% block extracss %}
+    <style>
+      .nav-link:hover{
+        color: white !important;
+      }
+      .active:hover{
+        color: black !important;
+      }
+        
+      </style>
+      {% endblock extracss %}
+{% block content %}
+<input type="hidden" value="{{profile.0.id}}" id="doc_id">
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6">
+                    <h1>Profile</h1>
+                </div>
+                <div class="col-sm-6 pr-0">
+                  <div class="d-flex flex-row-reverse bd-highlight">
+                    
+                    <div class="bd-highlight pl-3">
+                  <a class="btn btn-md bg-gradient-primary" href="/logout/">Logout</a>
+                </div>
+               
+              </div></div>
+            </div>
+        </div><!-- /.container-fluid -->
+    </section>
+
+    <!-- Main content -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <div class="col-md-3">
+
+                    <!-- Profile Image -->
+
+                    <div class="card card-primary card-outline">
+                        <div class="card-header">
+                            <h4>{{profile.0.name}}</h4>
+                        </div>
+                        <div class="card-body m-0 p-0">
+                            <div class="row mb-2 m-0 p-0 gallery_pack">
+                                
+                    
+                                <div class="mb-2 col-sm-12 p-2">
+                                  <a href="/changePasswordDoctor/{{profile.0.id}}" class="btn btn-md btn-primary btn-block">Change Password</a>
+                              </div>
+                                
+                            </div>
+                           
+                        </div>
+
+                        <!-- /.card-body -->
+                    </div>
+                
+
+                    <!-- About Me Box -->
+                    <div class="card card-primary card-outline">
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                           <div class="text-center">
+                            <a class="side_doctor" onclick="click_view(); return false;" href="#">Today's Appointments</a>
+                            
+                            </div> 
+                            <hr>
+                          <div class="text-center" style="font-family:'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif; font-size: x-large;" id="app_view"></div>  
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                </div>
+                <!-- /.col -->
+                <div class="col-md-9 p-0">
+                    <div class="col-md" id="about">
+                        <div class="card">
+                            <div class="card-header p-2">
+                                <h4 class="m-0 p-2">About</h4>
+                            </div>
+                            <div class="card-body about">
+                                        <div class="row">
+                                        <div class="col-lg-6">
+                                            <ul class="small-points p-2">
+                                        <li>Email : {{profile.0.email}}</li>
+                                        <li>Phone : {{profile.0.phone}}</li>
+                                        <li>Qualification : {{profile.0.qualification}}</li>
+                                            </ul>
+                                        </div>
+                                        <div class="col-lg-6">
+                                            <ul class="small-points p-2">
+                                        <li>Speciality : {{profile.0.speciality}}</li>
+                                        <li>Associated Hospital : {{hospital_name.0.name}}</li>
+                                    </ul>
+                                    
+                             </div>   
+                                    </div>
+                                    
+                        </div>
+                    </div>
+                         
+                        </div>
+
+                        <div class="col-md" id="about">
+                            <div class="card">
+                                <div class="card-header p-2">
+                                    <h4 class="m-0 p-2">Appointments</h4>
+                                </div>
+                                <div class="card-body p-0">
+                                   
+                                          <div class="card-primary card-tabs">
+                                            <div class="card-header p-0 pt-1" style="border: 0px !important;">
+                                              <ul class="nav nav-tabs" id="custom-tabs-five-tab" role="tablist">
+                                                <li class="nav-item">
+                                                  <a class="nav-link active" id="custom-tabs1-tab" data-toggle="pill" href="#custom-tabs1" onclick="view_appointments_now(); return false;" role="tab" aria-controls="custom-tabs-five-overlay" aria-selected="false">View</a>
+                                                </li>
+                                                   
+                                              </ul>
+                                            </div>
+                                            <div class="card-body">
+                                              <div class="tab-content" id="custom-tabContent">
+                        
+                                                <div class="tab-pane fade active show" id="custom-tabs1" role="tabpanel" aria-labelledby="custom-tabs-five-overlay-dark-tab">
+                                                    <div class="overlay-wrapper">
+                                                      <div class="overlay dark" id="load1" style="display: none;"><i class="fas fa-3x fa-sync-alt fa-spin"></i><div class="text-bold pt-2">Loading...</div></div>
+                                                      <div class="card-body table-responsive">
+                                                        <table class="table" id="results_v">
+                                                            
+                                                            
+                                                        </table>
+                                                      </div>
+                                                      <div class="card-footer" id="demo_v">
+                                                        <nav aria-label="Contacts Page Navigation">
+                                                            <div id="pageNavPosition_v" style="text-align: center;"></div>
+                                        
+                                                        </nav>
+                                                    </div>
+                                                  
+                                                    </div>
+                                                  </div>
+                                                 
+                                              </div>
+
+                                              </div>
+                                            </div>
+                                            
+                                      </div>             
+                            </div>
+                        </div>
+                             
+                            </div>
+                        </div>
+                        </div>
+                
+                </div>
+
+
+                <!-- /.nav-tabs-custom -->
+            </div>
+            <!-- /.col -->
+        </div>
+        <!-- /.row -->
+</div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+</div>
+{% endblock content %}
